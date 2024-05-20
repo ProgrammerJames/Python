@@ -29,7 +29,7 @@ def build_fourier_series(input : list[float]) -> Series:
 		for j, v in enumerate(input):
 			val : float = square((float(j)/count)*i)
 			sum += val*v
-			#print(j, ": ", val) # DEBUG
+			#print(j, ": ", val, " (", (val*v), ")") # DEBUG
 			pass
 		
 		sum = sum/len(input)
@@ -65,17 +65,21 @@ def calculate_psign_result(series : Series) -> list[float]:
 	
 	for j, v in enumerate(output):
 		for i, p in enumerate(f_list):
-			val = square((float(j)/count)*p[1])*p[0]
-			output[j] += (val+1.0)*0.5
+			val = (square((float(j)/count)*p[1])+1.0)*p[0]
+			output[j] += val*0.5
 		pass
 	
 	return output
 
 def adjust_sample_range(series : Series) -> Series:
+	f_sum : float = 0.0
+	
 	for i, v in enumerate(series):
+		f_sum += v[0]
 		series[i] = (v[0]*2.0, v[1])
 	
-	series[0] = (series[0][0]-8.0, series[0][1])
+	series[0] = (series[0][0]-f_sum, series[0][1])
+	
 	return series
 
 # Perform transformation test for input
@@ -102,10 +106,14 @@ def test_fourier(input : list[float]):
 	
 	assert input == output
 
-# Test Cases
+# Test Transformation Cases
+test_fourier([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
 test_fourier([1.0, 1.0, 1.0, 1.0, -1.0, -1.0, -1.0, -1.0])
 test_fourier([0.0, 0.0, 1.0, 1.0, 0.0, 0.0, -1.0, -1.0])
 test_fourier([1.0, 1.0, 1.0, 2.0, -1.0, -1.0, -1.0, -1.0])
 test_fourier([-2.0, -3.0, -1.0, -1.0, -2.0, 0.0, 0.0, 2.0])
 test_fourier([-9.0, 9.0, 2.0, 9.0, -6.0, -5.0, 10.0, -5.0])
 test_fourier([0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0])
+
+# Test Series Arithmetic Cases
+# TODO
