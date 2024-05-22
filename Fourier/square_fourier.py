@@ -22,12 +22,11 @@ def build_fourier_series(input : list[float]) -> Series:
 	f_sum = 0.0
 	
 	for i, p in enumerate(f_list):
-		#print("Frequency: ", p[1]) # DEBUG
 		#print("Frequency: ", i) # DEBUG
 		sum : float = 0.0
 		
 		for j, v in enumerate(input):
-			val : float = square((float(j)/count)*i)
+			val : float = square(((float(j)/count)*i))
 			sum += val*v
 			#print(j, ": ", val, " (", (val*v), ")") # DEBUG
 			pass
@@ -38,8 +37,6 @@ def build_fourier_series(input : list[float]) -> Series:
 		#print("Sum: ", sum) # DEBUG
 		#print("\n") # DEBUG
 		pass
-	
-	#f_list[0] = (f_list[0][0]-8.0, f_list[0][1])
 	
 	return f_list
 
@@ -64,9 +61,11 @@ def calculate_psign_result(series : Series) -> list[float]:
 	count : int = float(len(f_list)-1)
 	
 	for j, v in enumerate(output):
-		for i, p in enumerate(f_list):
-			val = (square((float(j)/count)*p[1])+1.0)*p[0]
-			output[j] += val*0.5
+		output[j] = f_list[0][0]
+		
+		for i, p in enumerate(f_list[1:]):
+			val = square((float(j)/count)*p[1])*math.copysign(1.0, p[0])
+			output[j] += (val+1.0)*abs(p[0])
 		pass
 	
 	return output
@@ -74,11 +73,10 @@ def calculate_psign_result(series : Series) -> list[float]:
 def adjust_sample_range(series : Series) -> Series:
 	f_sum : float = 0.0
 	
-	for i, v in enumerate(series):
-		f_sum += v[0]
-		series[i] = (v[0]*2.0, v[1])
+	for i, v in enumerate(series[1:]):
+		f_sum += abs(v[0])
 	
-	series[0] = (series[0][0]-f_sum, series[0][1])
+	series[0] = ((series[0][0]-f_sum), series[0][1])
 	
 	return series
 
